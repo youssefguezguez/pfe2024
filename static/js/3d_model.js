@@ -1,4 +1,5 @@
-let scene, camera, renderer, hannibalModel;
+let scene, camera, renderer, hannibalModel, mixer, directionalLight, pointLight;
+let logInterval;
 
 function init() {
     const container = document.getElementById('3d-container');
@@ -8,8 +9,8 @@ function init() {
 
     // Set up the camera
     camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 0, 10);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 3, 9.4);
+    camera.lookAt(0, -1, 0);
 
     // Set up the renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -17,21 +18,18 @@ function init() {
     container.appendChild(renderer.domElement);
 
     // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2);
     scene.add(ambientLight);
 
     // Add directional light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-    directionalLight.position.set(5, 5, 5);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+    directionalLight.position.set(0, 5, 15);
     scene.add(directionalLight);
 
-    // Add spotlight
-    const spotlight = new THREE.SpotLight(0xffffff, 1.5);
-    spotlight.position.set(0, 10, 10);
-    spotlight.angle = Math.PI / 4;
-    spotlight.penumbra = 0.5;
-    spotlight.castShadow = true;
-    scene.add(spotlight);
+    // **Add point light**
+    pointLight = new THREE.PointLight(0xffffff, 1.5, 100); // Color, Intensity, Distance
+    pointLight.position.set(0, -3, 8); // Position the light to face the model
+    scene.add(pointLight);
 
     // Load the model
     loadModel();
@@ -39,8 +37,14 @@ function init() {
     // Handle window resize
     window.addEventListener('resize', onWindowResize, false);
 
-    // Start animation loop
-    animate();
+    // Start rendering loop
+    render();
+
+    // Set up logging every 10 seconds
+    logInterval = setInterval(logPositions, 10000);
+
+    // Prompt user for input every 10 seconds
+    setInterval(promptUserInput, 10000);
 }
 
 function loadModel() {
@@ -52,15 +56,25 @@ function loadModel() {
     loader.setDRACOLoader(dracoLoader);
 
     // Load the GLTF model
-    loader.load('/static/models/hannibalbarca.glb', 
+    loader.load('/static/models/untitled.glb', 
         (gltf) => {
             hannibalModel = gltf.scene;
             scene.add(hannibalModel);
 
+            // Center and scale the model
             centerAndScaleModel(hannibalModel);
 
-            // Rotate the model to face the camera
-            hannibalModel.rotation.y = Math.PI;
+            hannibalModel.position.set(0, -5.5, 4);
+
+            // Log model position
+            console.log('Model position:', hannibalModel.position);
+
+            // Set up animation mixer
+            mixer = new THREE.AnimationMixer(hannibalModel);
+            const clips = gltf.animations;
+            if (clips.length > 0) {
+                mixer.clipAction(clips[0]).play();
+            }
         },
         (xhr) => {
             console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -83,11 +97,11 @@ function centerAndScaleModel(model) {
     model.scale.multiplyScalar(scale);
 }
 
-function animate() {
-    requestAnimationFrame(animate);
+function render() {
+    requestAnimationFrame(render);
 
-    if (hannibalModel) {
-        hannibalModel.rotation.y += 0.005;
+    if (mixer) {
+        mixer.update(0.01); // Update the animation mixer
     }
 
     renderer.render(scene, camera);
@@ -99,5 +113,6 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
 }
+
 
 document.addEventListener('DOMContentLoaded', init);
