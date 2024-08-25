@@ -75,12 +75,23 @@ function showErrorMessage(message) {
 }
 
 function speakResponse(text) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        speechSynthesis.speak(utterance);
-    } else {
-        console.log('Text-to-speech not supported in this browser');
-    }
+    fetch('/generate_tts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.audio_url) {
+            const audio = new Audio(data.audio_url);
+            audio.play();
+        } else {
+            console.error('Error generating speech:', data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 // Event listener for the send button
