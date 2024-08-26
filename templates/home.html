@@ -5,15 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historical AI Chat</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        html, body {
+            height: 200%; /* Ensure body and html take up full height */
+            margin: 10px; /* Remove default margin */
+        }
+
+        body {
+            display: flex;
+            flex-direction: column; /* Arrange children in a column */
+        }
+
+        .main-content {
+            flex: 1; /* Take up remaining space to push footer down */
+        }
+
+        .container12 {
+            display: flex; /* Use flexbox to align items next to each other */
+            justify-content: center; /* Center the items horizontally */
+            align-items: center; /* Align items vertically */
+            gap: 20px; /* Add space between items */
+        }
+    
+        .item12 {
+            text-align: center; /* Center text within each item */
+            flex: 1; /* Make each item take up equal space */
+            margin: 0 10px; /* Add horizontal margin between items */
+        }
+    
+        .item12 img {
+            width: 200px; /* Set a fixed width for all images */
+            height: 250px; /* Set a fixed height for all images to ensure uniform size */
+            object-fit: cover; /* Ensure images cover the area without distortion */
+        }
+    
+        .btn {
+            display: block; /* Make the button take up full width */
+            margin-top: 10px; /* Space between image and button */
+            text-align: center; /* Center text in the button */
+        }
+
+        footer {
+            text-align: center; /* Center text in the footer */
+            padding: 10px 0; /* Padding for the footer */
+            border-top: 1px solid #ddd; /* Add a border above the footer */
+            background: #f8f8f8; /* Light background color for the footer */
+        }
+
+        footer img {
+            width: 100px; /* Set a fixed width for the logo */
+            height: auto; /* Keep the aspect ratio of the logo */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Welcome to Historical AI Chat</h1>
         </header>
+
         <main>
-            <a href="{{ url_for('video_call') }}" class="btn">Start Video Call with Hannibal Barca</a>
+            <div class="container12">
+                <div class="item12">
+                    <img src="./static/img/Hannibal.png" alt="Hannibal Barca">
+                    <a href="{{ url_for('video_call') }}" class="btn">Start Video Call with Hannibal Barca</a>
+                </div>
+                <div class="item12">
+                    <img src="./static/img/Mago.png" alt="Mago I of Carthage">
+                    <a href="#" class="btn">Start Video Call with Mago I of Carthage</a>
+                </div>
+                <div class="item12">
+                    <img src="./static/img/Elissa.png" alt="Elissa">
+                    <a href="#" class="btn">Start Video Call with Elissa</a>
+                </div>
+            </div>   
+            
         </main>
+
+        <br> <br> <br> <br> <br> <br> <br> <br> 
+
+
+        <footer>
+            <img src="./static/img/Logo.png" alt="Golden_Madina">
+            <p>&copy; 2024 Golden_Madina. All rights reserved.</p>
+        </footer>
     </div>
 </body>
 </html>
